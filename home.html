@@ -1,0 +1,203 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamNote Login</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+
+    <style>
+        /* iOS-specific styles */
+        .login-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 2rem;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header h1 {
+            color: var(--text-color);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header p {
+            color: #666;
+        }
+
+        .login-form {
+            background-color: var(--card-bg-color);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-group {
+            position: relative;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .form-group:last-child {
+            border-bottom: none;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            background: transparent;
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .login-button:hover {
+            background-color: var(--button-hover-bg-color);
+        }
+
+        .login-button:active {
+            transform: scale(0.98);
+        }
+
+        .login-button:disabled {
+            background-color: var(--primary-light);
+            cursor: not-allowed;
+        }
+
+        /* Spinner */
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin: -10px 0 0 -10px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Button text */
+        .button-text {
+            transition: opacity 0.3s ease;
+        }
+
+        .loading .button-text {
+            opacity: 0;
+        }
+
+        .loading .spinner {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <div class="login-header">
+        <img src="{% static 'Logo.svg' %}" alt="TeamNote Logo" style="width: 100px; margin-bottom: 1rem;">
+
+        <h1>TeamNote</h1>
+        <p>Sign in to your account</p>
+    </div>
+
+    <form class="login-form" id="loginForm" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <input type="email" name="email" placeholder="Email" required> <!-- Add name -->
+        </div>
+        <div class="form-group">
+            <input type="password" name="password" placeholder="Password" required> <!-- Add name -->
+        </div>
+    </form>
+
+    <button class="login-button" id="loginButton">
+        <span class="button-text">Sign In</span>
+        <div class="spinner"></div>
+    </button>
+    <div style="text-align: center; margin-top: 1.5rem;">
+
+        <p style="color: var(--text-color); font-size: 0.9rem;">
+            Don't have an account?
+            <a href="{% url 'register_user' %}"
+               style="color: var(--primary-color); text-decoration: none; font-weight: bold;">
+                Sign Up
+            </a>
+        </p>
+    </div>
+</div>
+
+<script>
+    document.getElementById('loginButton').addEventListener('click', async function (e) {
+        e.preventDefault();
+        const button = this;
+        const form = document.getElementById('loginForm');
+
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        button.classList.add('loading');
+        button.disabled = true;
+
+        try {
+            const response = await fetch('{% url "login_user" %}', {
+                method: 'POST',
+                body: new FormData(form),
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                window.location.href = "{% url 'dashboard' %}";
+            } else {
+                alert(data.error || 'Login failed. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Network error. Please try again.');
+        } finally {
+            button.classList.remove('loading');
+            button.disabled = false;
+        }
+    });</script>
+</body>
+</html>

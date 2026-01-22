@@ -1,0 +1,1908 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamNote Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            transition: background-color 0.3s ease, color 0.3s ease;
+            background-color: #f5f5f7;
+            color: #333;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Root theme variables for light mode */
+        :root {
+            --primary-color: #6366F1;
+            --primary-light: #818CF8;
+            --primary-dark: #4F46E5;
+            --accent-green: #10B981;
+            --accent-orange: #F59E0B;
+            --accent-pink: #EC4899;
+
+            --primary-bg-color: #ffffff;
+            --secondary-bg-color: #F3F4F6;
+            --text-color: #1F2937;
+            --header-bg-color: var(--primary-color);
+            --button-bg-color: var(--primary-color);
+            --button-hover-bg-color: var(--primary-dark);
+            --link-color: var(--primary-color);
+            --border-color: #E5E7EB;
+            --input-bg-color: #ffffff;
+            --input-border-color: #E5E7EB;
+            --input-focus-border-color: var(--primary-light);
+            --modal-bg-color: rgba(99, 102, 241, 0.1);
+            --card-bg-color: #FAFAFA;
+        }
+
+        [data-theme='dark'] {
+            --primary-bg-color: #1F2937;
+            --secondary-bg-color: #374151;
+            --text-color: #F9FAFB;
+            --header-bg-color: var(--primary-dark);
+            --button-bg-color: var(--primary-color);
+            --button-hover-bg-color: var(--primary-light);
+            --link-color: var(--primary-light);
+            --border-color: #4B5563;
+            --input-bg-color: #374151;
+            --input-border-color: #4B5563;
+            --input-focus-border-color: var(--primary-light);
+            --modal-bg-color: rgba(99, 102, 241, 0.2);
+            --card-bg-color: #374151;
+            background-color: #121212;
+        }
+
+        /* Apply the root styles */
+        body {
+            background-color: var(--primary-bg-color);
+            color: var(--text-color);
+        }
+
+        /* Header Styles */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            background-color: var(--primary-bg-color);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+            position: sticky;
+            top: 0;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo {
+            width: 36px;
+            height: 36px;
+            background: var(--primary-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .app-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-color);
+            white-space: nowrap;
+        }
+
+        .search-container {
+            position: relative;
+            max-width: 300px;
+            width: 100%;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-bg-color);
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9CA3AF;
+            pointer-events: none;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--card-bg-color);
+            color: var(--text-color);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: var(--border-color);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: var(--card-bg-color);
+            transition: all 0.2s;
+        }
+
+        .user-profile:hover {
+            background: var(--border-color);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .user-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        /* Main Layout */
+        .dashboard-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background-color: var(--primary-bg-color);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            transition: all 0.3s ease;
+            overflow-y: auto;
+            z-index: 99;
+        }
+
+        .sidebar-section {
+            margin-bottom: 25px;
+            padding: 0 20px;
+        }
+
+        .sidebar-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: #6B7280;
+            margin-bottom: 15px;
+            padding-left: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-color);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .sidebar-item.active {
+            background-color: var(--primary-light);
+            color: white;
+        }
+
+        .sidebar-item:hover:not(.active) {
+            background-color: var(--card-bg-color);
+        }
+
+        .sidebar-item i {
+            margin-right: 12px;
+            font-size: 1.1rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .team-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .team-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .team-item:hover {
+            background-color: var(--card-bg-color);
+        }
+
+        .team-item.active {
+            background-color: var(--primary-light);
+            color: white;
+        }
+
+        .team-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: var(--accent-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 12px;
+            font-size: 0.8rem;
+        }
+
+        .team-name {
+            font-size: 0.95rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 20px;
+            background-color: var(--secondary-bg-color);
+            transition: all 0.3s ease;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+
+        .content-title {
+            font-size: clamp(1.2rem, 2vw, 1.5rem);
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .content-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            background-color: var(--button-bg-color);
+            color: white;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            background-color: var(--button-hover-bg-color);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--card-bg-color);
+        }
+
+        /* Notes Grid */
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            flex: 1;
+            overflow-y: auto;
+            padding: 5px;
+        }
+
+        .note-card {
+            background-color: var(--card-bg-color);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            min-height: 260px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        .note-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .note-header {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .note-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .note-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #6B7280;
+        }
+
+        .note-content {
+            padding: 15px;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .note-text {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text-color);
+            display: -webkit-box;
+            -webkit-line-clamp: 5;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .note-footer {
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .collaborators {
+            display: flex;
+        }
+
+        .collaborator {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.7rem;
+            margin-left: -8px;
+            border: 2px solid var(--card-bg-color);
+        }
+
+        .note-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .note-action-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            color: var(--text-color);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .note-action-btn:hover {
+            background: var(--border-color);
+        }
+
+        /* Mobile Sidebar Toggle */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--text-color);
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-toggle:hover {
+            background: var(--border-color);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 98;
+        }
+
+        /* Elegant empty state */
+        .elegant-empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem;
+            background-color: #f8fafc;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px dashed #cbd5e1;
+            margin-top: 1rem;
+        }
+
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .empty-icon i {
+            font-size: 36px;
+            color: white;
+        }
+
+        .elegant-empty h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .elegant-empty p {
+            color: #64748b;
+            max-width: 400px;
+            margin: 0 auto 1.5rem;
+            line-height: 1.5;
+        }
+
+        .create-note-btn {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 24px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px rgba(99, 102, 241, 0.2);
+        }
+
+        .create-note-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(99, 102, 241, 0.3);
+        }
+
+        .create-note-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Notes grid layout */
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            width: 100%;
+        }
+
+        .notes-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::after {
+            content: '';
+            flex-grow: 1;
+            height: 1px;
+            background: linear-gradient(to right, #cbd5e1, transparent);
+        }
+
+        /* Note card enhancements */
+        .note-card {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            background-color: white;
+            border: 1px solid #f1f5f9;
+        }
+
+        .note-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .note-header {
+            padding: 1.25rem 1.25rem 0.75rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .note-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .note-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .note-content {
+            padding: 1.25rem;
+            min-height: 120px;
+        }
+
+        .note-text {
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .note-footer {
+            padding: 0.75rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f8fafc;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .collaborators {
+            display: flex;
+        }
+
+        .collaborator {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #475569;
+            margin-right: -8px;
+            border: 2px solid white;
+        }
+
+        .collaborator:first-child {
+            margin-right: 5px;
+            z-index: 3;
+        }
+
+        .note-action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f1f5f9;
+            color: #64748b;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .note-action-btn:hover {
+            background-color: #e2e8f0;
+            color: #475569;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background-color: var(--card-bg-color);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color);
+            transition: all 0.2s ease;
+        }
+
+        .close-btn:hover {
+            color: var(--text-color);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.875rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--input-bg-color);
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .form-options {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .checkbox-option input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--primary-bg-color);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .btn.loading .spinner {
+            display: inline-block;
+        }
+
+        .btn.loading .button-text {
+            opacity: 0;
+        }
+
+        /* Actions dropdown */
+        .actions-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--card-bg-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 180px;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.2s ease;
+        }
+
+        .actions-dropdown.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(5px);
+        }
+
+        .dropdown-item {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: var(--primary-light);
+            color: white;
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Share modal specific */
+        .share-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .share-type {
+            display: flex;
+            gap: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        .share-type-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .share-type-btn.active {
+            background: var(--primary-light);
+            color: white;
+            border-color: var(--primary-light);
+        }
+
+        /* Responsive Design */
+        /* Large tablets and small laptops */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+
+            .notes-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            }
+
+            .content-header {
+                flex-wrap: wrap;
+            }
+        }
+
+        /* Tablets */
+        @media (max-width: 900px) {
+            .notes-grid {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            }
+        }
+
+        /* Small tablets and large phones */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                top: 0;
+                bottom: 0;
+                z-index: 100;
+                box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+            }
+
+            .app-name {
+                font-size: 1.1rem;
+            }
+
+            .search-container {
+                max-width: 200px;
+            }
+
+            .notes-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .content-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        /* Mobile devices */
+        @media (max-width: 600px) {
+            .dashboard-header {
+                padding: 0.8rem 1rem;
+            }
+
+            .search-container {
+                max-width: 160px;
+            }
+
+            .notes-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .user-name {
+                display: none;
+            }
+
+            .user-profile {
+                padding: 5px;
+            }
+
+            .header-actions {
+                gap: 8px;
+            }
+
+            .main-content {
+                padding: 15px;
+            }
+
+            .btn {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Small mobile devices */
+        @media (max-width: 480px) {
+            .search-container {
+                display: none;
+            }
+
+            .app-name {
+                display: none;
+            }
+
+            .content-actions {
+                gap: 5px;
+            }
+
+            .btn {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+
+            .btn i {
+                margin-right: 0;
+            }
+
+            .btn span {
+                display: none;
+            }
+
+            .btn.filter-btn span {
+                display: inline;
+            }
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .theme-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .theme-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .theme-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .theme-slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .theme-slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--card-bg-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-light);
+        }
+    </style>
+</head>
+<body>
+<!-- Dashboard Header -->
+<header class="dashboard-header">
+    <div class="header-left">
+        <button class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="logo-container">
+            <img src="{% static 'Logo.svg' %}" alt="TeamNote Logo" style="width: 50px; margin-bottom: 1rem;">
+            <div class="app-name">TeamNote</div>
+        </div>
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" placeholder="Search notes...">
+        </div>
+    </div>
+    <div class="header-right">
+        <div class="header-actions">
+            <button class="icon-btn">
+                <i class="fas fa-plus"></i>
+            </button>
+            <button class="icon-btn" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button class="icon-btn">
+                <i class="fas fa-bell"></i>
+            </button>
+        </div>
+        <div class="user-profile">
+            <div class="user-avatar">{{ request.user.first_name|first }}{{ request.user.last_name|first }}</div>
+            <div class="user-name">{{ request.user.get_full_name }}</div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Dashboard Container -->
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Menu</div>
+            <a href="#" class="sidebar-item active">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="sidebar-item">
+                <i class="fas fa-star"></i>
+                <span>Favorites</span>
+            </a>
+            <a href="#" class="sidebar-item">
+                <i class="fas fa-user-group"></i>
+                <span>My Teams</span>
+            </a>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">My Teams</div>
+            <div class="team-list">
+                <div class="team-item ">
+                    <div class="team-avatar">DS</div>
+                    <div class="team-name">Design Team</div>
+                </div>
+                <div class="team-item">
+                    <div class="team-avatar">DT</div>
+                    <div class="team-name">Development Team</div>
+                </div>
+                <div class="team-item">
+                    <div class="team-avatar">MK</div>
+                    <div class="team-name">Marketing</div>
+                </div>
+                <div class="team-item">
+                    <div class="team-avatar">PM</div>
+                    <div class="team-name">Project Managers</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Tags</div>
+            <a href="#" class="sidebar-item">
+                <i class="fas fa-tag" style="color: #10B981;"></i>
+                <span>Documentation</span>
+            </a>
+            <a href="#" class="sidebar-item">
+                <i class="fas fa-tag" style="color: #F59E0B;"></i>
+                <span>Ideas</span>
+            </a>
+            <a href="#" class="sidebar-item">
+                <i class="fas fa-tag" style="color: #EC4899;"></i>
+                <span>Meeting Notes</span>
+            </a>
+            <a href="#" class="sidebar-item">
+                <i class="fas fa-tag" style="color: #6366F1;"></i>
+                <span>Tasks</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content" id="mainContent">
+        <div class="content-header">
+            <h1 class="content-title">Personal Notes</h1>
+            <div class="content-actions">
+                <button class="btn btn-outline filter-btn">
+                    <i class="fas fa-filter"></i>
+                    <span>Filter</span>
+                </button>
+                <button class="btn" id="headerNewNoteBtn">
+                    <i class="fas fa-plus"></i>
+                    <span>New Note</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Personal Notes Sections -->
+        <div class="notes-section">
+            <h2 class="section-title">Private Notes</h2>
+            <div class="notes-grid">
+                {% for pn in private_notes %}
+                    <div class="note-card">
+                    <div class="note-header">
+                        <div class="note-title">{{ pn.title }}</div>
+                        <div class="note-meta">
+                            <span>Updated: {{ pn.updated_at|timesince }} ago</span>
+                            <span>
+                            {% if pn.is_favorite %}
+                                <i class="fas fa-star" style="color: #F59E0B;"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        </span>
+                        </div>
+                    </div>
+                    <div class="note-content">
+                        <div class="note-text">
+                            {{ pn.content|truncatechars:150 }}
+                        </div>
+                    </div>
+                    <div class="note-footer">
+                        <div class="collaborators">
+                            <div class="collaborator">
+                                {{ pn.created_by.first_name|first }}{{ pn.created_by.last_name|first }}
+                            </div>
+                        </div>
+                        <div class="note-actions">
+                            <button class="note-action-btn share-btn">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                            <button class="note-action-btn more-btn">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </button>
+
+                            <!-- Actions Dropdown -->
+                            <div class="actions-dropdown">
+                                <div class="dropdown-item" data-action="favorite">
+                                    <i class="fas fa-star"></i>
+                                    <span>Mark as Favorite</span>
+                                </div>
+                                <div class="dropdown-item" data-action="duplicate">
+                                    <i class="fas fa-copy"></i>
+                                    <span>Duplicate Note</span>
+                                </div>
+                                <div class="dropdown-item" data-action="export">
+                                    <i class="fas fa-file-export"></i>
+                                    <span>Export Note</span>
+                                </div>
+                                <div class="dropdown-item" data-action="delete" style="color: #EF4444;">
+                                    <i class="fas fa-trash"></i>
+                                    <span>Delete Note</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="elegant-empty">
+                        <div class="empty-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <h3>Your Private Notes Haven't Arrived Yet</h3>
+                        <p>Create secure notes only visible to you</p>
+                        <button class="create-note-btn" id="emptyStateBtn">
+                            <i class="fas fa-plus"></i> Create First Private Note
+                        </button>
+                    </div>
+                {% endfor %}
+                </div>
+            </div>
+
+            <!-- Shared by Me Section -->
+            <div class="notes-section">
+                <h2 class="section-title">Shared by Me</h2>
+                <div class="notes-grid">
+                    {% for sn in shared_notes %}
+                        <div class="note-card">
+                            <div class="note-header">
+                                <div class="note-title">{{ sn.title }}</div>
+                                <div class="note-meta">
+                                    <span>Updated: {{ sn.updated_at|timesince }} ago</span>
+                                    <span>
+                            {% if sn.is_favorite %}
+                                <i class="fas fa-star" style="color: #F59E0B;"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        </span>
+                                </div>
+                            </div>
+                            <div class="note-content">
+                                <div class="note-text">
+                                    {{ sn.content|truncatechars:150 }}
+                                </div>
+                            </div>
+                            <div class="note-footer">
+                                <div class="collaborators">
+                                    <div class="collaborator">
+                                        {{ sn.created_by.first_name|first }}{{ sn.created_by.last_name|first }}
+                                    </div>
+                                    {% for collab in sn.collaboration_set.all|slice:":3" %}
+                                        <div class="collaborator">
+                                            {{ collab.user.first_name|first }}{{ collab.user.last_name|first }}
+                                        </div>
+                                    {% endfor %}
+                                    {% with collab_count=sn.collaboration_set.count %}
+                                        {% if collab_count > 3 %}
+                                            <div class="collaborator">+{{ collab_count|add:"-3" }}</div>
+                                        {% endif %}
+                                    {% endwith %}
+                                </div>
+                                <div class="note-actions">
+                                    <button class="note-action-btn">
+                                        <i class="fas fa-share-alt"></i>
+                                    </button>
+                                    <button class="note-action-btn">
+                                        <i class="fas fa-ellipsis-h"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="elegant-empty">
+                            <div class="empty-icon">
+                                <i class="fas fa-share-alt"></i>
+                            </div>
+                            <h3>No Notes Shared Yet</h3>
+                            <p>Share your notes with teammates to collaborate</p>
+                            <button class="create-note-btn">
+                                <i class="fas fa-share"></i> Share Your First Note
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Shared with Me Section -->
+            <div class="notes-section">
+                <h2 class="section-title">Shared with Me</h2>
+                <div class="notes-grid">
+                    {% for swm in shared_with_me %}
+                        <div class="note-card">
+                            <div class="note-header">
+                                <div class="note-title">{{ swm.title }}</div>
+                                <div class="note-meta">
+                                    <span>Updated: {{ swm.updated_at|timesince }} ago</span>
+                                    <span>
+                            {% if swm.is_favorite %}
+                                <i class="fas fa-star" style="color: #F59E0B;"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        </span>
+                                </div>
+                            </div>
+                            <div class="note-content">
+                                <div class="note-text">
+                                    {{ swm.content|truncatechars:150 }}
+                                </div>
+                            </div>
+                            <div class="note-footer">
+                                <div class="collaborators">
+                                    <div class="collaborator">
+                                        {{ swm.created_by.first_name|first }}{{ swm.created_by.last_name|first }}
+                                    </div>
+                                    <div class="collaborator">
+                                        {{ request.user.first_name|first }}{{ request.user.last_name|first }}
+                                    </div>
+                                    {% with collab_count=swm.collaboration_set.count|add:"-1" %}
+                                        {% if collab_count > 0 %}
+                                            <div class="collaborator">+{{ collab_count }}</div>
+                                        {% endif %}
+                                    {% endwith %}
+                                </div>
+                                <div class="note-actions">
+                                    <button class="note-action-btn">
+                                        <i class="fas fa-comment"></i>
+                                    </button>
+                                    <button class="note-action-btn">
+                                        <i class="fas fa-ellipsis-h"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="elegant-empty">
+                            <div class="empty-icon">
+                                <i class="fas fa-user-friends"></i>
+                            </div>
+                            <h3>No Notes Shared With You</h3>
+                            <p>Teammates will appear here when they share notes with you</p>
+                            <button class="create-note-btn">
+                                <i class="fas fa-user-plus"></i> Request a Note
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Create Note Modal -->
+    <div class="modal-overlay" id="createNoteModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Create New Note</h2>
+                <button class="close-btn" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="createNoteForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="team_id" id="teamIdField" value="">
+
+                    <div class="form-group">
+                        <label for="noteTitle">Title</label>
+                        <input type="text" id="noteTitle" name="title" placeholder="Enter note title" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="noteContent">Content</label>
+                        <textarea id="noteContent" name="content" placeholder="Start typing your note here..."
+                                  required></textarea>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="checkbox-option">
+                            <input type="checkbox" id="noteFavorite" name="is_favorite">
+                            <span>Mark as Favorite</span>
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                <button class="btn" id="createBtn">
+                    <span class="button-text">Create Note</span>
+                    <div class="spinner"></div>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Share Note Modal -->
+    <div class="modal-overlay" id="shareNoteModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Share Note</h2>
+                <button class="close-btn" id="closeShareModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="share-options">
+                    <div class="share-type">
+                        <button class="share-type-btn active" data-type="email">Share via Email</button>
+                        <button class="share-type-btn" data-type="team">Share with Team</button>
+                    </div>
+
+                    <!-- Email Sharing Section -->
+                    <div class="share-section" id="emailShareSection">
+                        <div class="form-group">
+                            <label for="shareEmail">Email Address</label>
+                            <input type="email" id="shareEmail" placeholder="Enter email address" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="permissionType">Permission</label>
+                            <select id="permissionType">
+                                <option value="view">Can View</option>
+                                <option value="comment">Can Comment</option>
+                                <option value="edit">Can Edit</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Team Sharing Section -->
+                    <div class="share-section" id="teamShareSection" style="display:none">
+                        <div class="form-group">
+                            <label for="shareTeam">Select Team</label>
+                            <select id="shareTeam">
+                                <option value="">Select a team</option>
+                                <option value="design">Design Team</option>
+                                <option value="dev">Development Team</option>
+                                <option value="marketing">Marketing Team</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="teamPermission">Permission</label>
+                            <select id="teamPermission">
+                                <option value="view">Can View</option>
+                                <option value="comment">Can Comment</option>
+                                <option value="edit">Can Edit</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelShare">Cancel</button>
+                <button class="btn" id="shareBtn">
+                    <span class="button-text">Share Note</span>
+                    <div class="spinner"></div>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Note Actions Dropdown (Add inside each note card) -->
+    <div class="actions-dropdown" id="actionsDropdown-{{ note.id }}">
+        <div class="dropdown-item" data-action="favorite">
+            <i class="fas fa-star"></i>
+            <span>Mark as Favorite</span>
+        </div>
+        <div class="dropdown-item" data-action="duplicate">
+            <i class="fas fa-copy"></i>
+            <span>Duplicate Note</span>
+        </div>
+        <div class="dropdown-item" data-action="export">
+            <i class="fas fa-file-export"></i>
+            <span>Export Note</span>
+        </div>
+        <div class="dropdown-item" data-action="delete" style="color: #EF4444;">
+            <i class="fas fa-trash"></i>
+            <span>Delete Note</span>
+        </div>
+    </div>
+</div>
+<script>
+    // Theme Toggle Functionality
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            const isDarkMode = body.getAttribute('data-theme') === 'dark';
+            if (isDarkMode) {
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        });
+
+        // Apply saved theme preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            body.setAttribute('data-theme', 'dark');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+    }
+
+    // Mobile Menu Toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const mainContent = document.getElementById('mainContent');
+
+    if (menuToggle && sidebar && sidebarOverlay) {
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            sidebarOverlay.classList.toggle('active');
+            document.body.style.overflow = 'hidden';
+        });
+
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+
+        // Close sidebar when clicking outside on mobile
+        if (mainContent) {
+            mainContent.addEventListener('click', () => {
+                if (window.innerWidth <= 768 && sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        }
+    }
+
+    // Note Card Interaction
+    const noteCards = document.querySelectorAll('.note-card');
+    noteCards.forEach(card => {
+        card.addEventListener('click', function (e) {
+            if (!e.target.closest('.note-action-btn')) {
+                // In a real app, this would open the note editor
+                alert('Opening note editor...');
+            }
+        });
+    });
+
+    // Team Switching
+    const teamItems = document.querySelectorAll('.team-item');
+    if (teamItems.length > 0) {
+        teamItems.forEach(item => {
+            item.addEventListener('click', function () {
+                // Find active team item safely
+                const activeItem = document.querySelector('.team-item.active');
+                if (activeItem) {
+                    activeItem.classList.remove('active');
+                }
+
+                this.classList.add('active');
+
+                // Update content title safely
+                const contentTitle = document.querySelector('.content-title');
+                if (contentTitle) {
+                    contentTitle.textContent = this.querySelector('.team-name').textContent + ' Notes';
+                }
+            });
+        });
+    }
+
+    // Responsive adjustments on resize
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768 && sidebar && sidebarOverlay) {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+
+    // CREATE NOTE MODAL FUNCTIONALITY
+    const createNoteModal = document.getElementById('createNoteModal');
+    const headerNewNoteBtn = document.getElementById('headerNewNoteBtn');
+    const emptyStateBtn = document.getElementById('emptyStateBtn');
+    const createNoteBtns = [];
+
+    if (headerNewNoteBtn) createNoteBtns.push(headerNewNoteBtn);
+    if (emptyStateBtn) createNoteBtns.push(emptyStateBtn);
+
+    if (createNoteModal) {
+        const closeModal = document.getElementById('closeModal');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const createBtn = document.getElementById('createBtn');
+        const createNoteForm = document.getElementById('createNoteForm');
+
+        // Function to open modal
+        const openModal = () => {
+            createNoteModal.classList.add('active');
+        };
+
+        // Open modal when clicking "New Note" buttons
+        createNoteBtns.forEach(btn => {
+            btn.addEventListener('click', openModal);
+        });
+
+        // Close modal
+        [closeModal, cancelBtn].forEach(btn => {
+            if (btn) {
+                btn.addEventListener('click', () => {
+                    createNoteModal.classList.remove('active');
+                });
+            }
+        });
+
+        // Close modal when clicking outside
+        createNoteModal.addEventListener('click', (e) => {
+            if (e.target === createNoteModal) {
+                createNoteModal.classList.remove('active');
+            }
+        });
+
+        // Create note functionality
+        if (createBtn && createNoteForm) {
+            createBtn.addEventListener('click', async () => {
+                // Form validation
+                if (!createNoteForm.checkValidity()) {
+                    createNoteForm.reportValidity();
+                    return;
+                }
+
+                // Show loading state
+                createBtn.classList.add('loading');
+                createBtn.disabled = true;
+
+                try {
+                    // Get form data
+                    const formData = new FormData(createNoteForm);
+
+                    // Send AJAX request to server
+                    const response = await fetch('{% url "create_note" %}', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.status === 'success') {
+                        // Close modal
+                        createNoteModal.classList.remove('active');
+
+                        // Reset form
+                        createNoteForm.reset();
+
+                        // Reload the page to show new note
+                        location.reload();
+                    } else {
+                        throw new Error(data.message || 'Failed to create note');
+                    }
+                } catch (error) {
+                    console.error('Error creating note:', error);
+                    alert(`Error: ${error.message}`);
+                } finally {
+                    // Reset button state
+                    createBtn.classList.remove('loading');
+                    createBtn.disabled = false;
+                }
+            });
+        }
+    }
+    // Share Note Modal Functionality
+    let currentNoteId = null;
+
+    // Open share modal - mobile friendly
+    document.querySelectorAll('.share-btn').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            currentNoteId = this.closest('.note-card').dataset.noteId;
+            document.getElementById('shareNoteModal').classList.add('active');
+
+            // Close any open dropdowns
+            document.querySelectorAll('.actions-dropdown').forEach(d => {
+                d.classList.remove('active');
+            });
+        });
+    });
+
+    // Three-dot menu functionality - mobile friendly
+    document.querySelectorAll('.more-btn').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const dropdown = this.nextElementSibling;
+
+            // Close all dropdowns except this one
+            document.querySelectorAll('.actions-dropdown').forEach(d => {
+                if (d !== dropdown) d.classList.remove('active');
+            });
+
+            // Toggle current dropdown
+            dropdown.classList.toggle('active');
+        });
+    });
+
+    // Click outside to close dropdowns - mobile optimized
+    document.addEventListener('click', function (e) {
+        // Close dropdowns if clicking anywhere except buttons or dropdown
+        if (!e.target.closest('.actions-dropdown') &&
+            !e.target.closest('.more-btn') &&
+            !e.target.closest('.share-btn')) {
+            document.querySelectorAll('.actions-dropdown').forEach(d => {
+                d.classList.remove('active');
+            });
+        }
+
+        // Close modals if clicking on overlay
+        if (e.target.classList.contains('modal-overlay')) {
+            e.target.classList.remove('active');
+        }
+    });
+
+    // Touch support for mobile devices
+    document.addEventListener('touchend', function (e) {
+        // Close dropdowns if tapping outside
+        if (!e.target.closest('.actions-dropdown') &&
+            !e.target.closest('.more-btn') &&
+            !e.target.closest('.share-btn')) {
+            document.querySelectorAll('.actions-dropdown').forEach(d => {
+                d.classList.remove('active');
+            });
+        }
+    });
+
+    // Helper functions
+    async function toggleFavorite(noteId) {
+        const response = await fetch(`/toggle-favorite/${noteId}/`);
+        const data = await response.json();
+        if (response.ok) {
+            location.reload(); // Refresh to show updated state
+        } else {
+            throw new Error(data.error || 'Failed to toggle favorite');
+        }
+    }
+
+    async function duplicateNote(noteId) {
+        const response = await fetch(`/duplicate-note/${noteId}/`);
+        const data = await response.json();
+        if (response.ok) {
+            location.reload(); // Refresh to show new note
+        } else {
+            throw new Error(data.error || 'Failed to duplicate note');
+        }
+    }
+
+    function exportNote(noteId) {
+        // This would open a new window/tab with export options
+        alert(`Exporting note ${noteId}`);
+        // window.open(`/export-note/${noteId}/`, '_blank');
+    }
+
+    async function deleteNote(noteId) {
+        const response = await fetch(`/delete-note/${noteId}/`, {method: 'DELETE'});
+        if (response.ok) {
+            location.reload(); // Refresh to show updated list
+        } else {
+            const data = await response.json();
+            throw new Error(data.error || 'Failed to delete note');
+        }
+    }
+
+    // CSRF helper function
+    function getCookie(name) {
+        // ... existing implementation ...
+    }
+</script>
+</body>
+</html>

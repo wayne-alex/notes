@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamNote - Team Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        :root {
+            --primary-color: #6366F1;
+            --primary-light: #818CF8;
+            --primary-dark: #4F46E5;
+            --accent-green: #10B981;
+            --accent-orange: #F59E0B;
+            --accent-pink: #EC4899;
+            --accent-purple: #8B5CF6;
+            --accent-blue: #3B82F6;
+
+            --primary-bg-color: #ffffff;
+            --secondary-bg-color: #F9FAFB;
+            --text-color: #1F2937;
+            --header-bg-color: var(--primary-color);
+            --button-bg-color: var(--primary-color);
+            --button-hover-bg-color: var(--primary-dark);
+            --link-color: var(--primary-color);
+            --border-color: #E5E7EB;
+            --input-bg-color: #ffffff;
+            --input-border-color: #E5E7EB;
+            --input-focus-border-color: var(--primary-light);
+            --card-bg-color: #FAFAFA;
+            --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        [data-theme='dark'] {
+            --primary-bg-color: #1F2937;
+            --secondary-bg-color: #111827;
+            --text-color: #F9FAFB;
+            --header-bg-color: var(--primary-dark);
+            --button-bg-color: var(--primary-color);
+            --button-hover-bg-color: var(--primary-light);
+            --link-color: var(--primary-light);
+            --border-color: #4B5563;
+            --input-bg-color: #374151;
+            --input-border-color: #4B5563;
+            --input-focus-border-color: var(--primary-light);
+            --card-bg-color: #374151;
+            --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            background-color: var(--secondary-bg-color);
+            color: var(--text-color);
+            height: 100vh;
+            overflow: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* App Container */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Header Styles */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            background-color: var(--primary-bg-color);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo {
+            width: 36px;
+            height: 36px;
+            background: var(--primary-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .app-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-color);
+            white-space: nowrap;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--card-bg-color);
+            color: var(--text-color);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: var(--border-color);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: var(--card-bg-color);
+            transition: all 0.2s;
+        }
+
+        .user-profile:hover {
+            background: var(--border-color);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .user-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        /* Teams Content */
+        .teams-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .teams-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: 12px;
+            background: var(--button-bg-color);
+            color: white;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            background: var(--button-hover-bg-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--card-bg-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Teams Grid */
+        .teams-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .team-card {
+            background: var(--card-bg-color);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .team-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .team-header {
+            padding: 25px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-purple));
+            color: white;
+            position: relative;
+        }
+
+        .team-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .team-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .team-members {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .team-actions {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .team-action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .team-action-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .team-content {
+            padding: 25px;
+            flex: 1;
+        }
+
+        .team-description {
+            color: #6B7280;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .members-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .member {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: var(--secondary-bg-color);
+            border-radius: 10px;
+            font-size: 0.95rem;
+        }
+
+        .member-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+        }
+
+        .team-footer {
+            padding: 20px 25px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .team-stats {
+            display: flex;
+            gap: 20px;
+            color: #6B7280;
+            font-size: 0.9rem;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Create Team Section */
+        .create-team-section {
+            background: var(--card-bg-color);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 40px;
+        }
+
+        .create-team-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .create-team-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            background: rgba(99, 102, 241, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background-color: var(--input-bg-color);
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--input-focus-border-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background-color: var(--input-bg-color);
+            color: var(--text-color);
+            font-size: 1rem;
+            resize: vertical;
+        }
+
+        .invite-section {
+            background: var(--secondary-bg-color);
+            border-radius: 14px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .invite-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .invite-input {
+            flex: 1;
+        }
+
+        .invite-btn {
+            padding: 0 20px;
+            border-radius: 10px;
+        }
+
+        .invited-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .invited-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--card-bg-color);
+            padding: 8px 15px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+
+        .remove-invite {
+            color: #EF4444;
+            cursor: pointer;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .teams-container {
+                padding: 20px;
+            }
+
+            .teams-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+
+            .teams-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app-name {
+                display: none;
+            }
+
+            .user-name {
+                display: none;
+            }
+
+            .user-profile {
+                padding: 5px;
+            }
+
+            .invite-input-group {
+                flex-direction: column;
+            }
+
+            .invite-btn {
+                padding: 12px;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--card-bg-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-light);
+        }
+    </style>
+</head>
+<body>
+<!-- App Container -->
+<div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-left">
+            <div class="logo-container">
+                <div class="logo">TN</div>
+                <div class="app-name">TeamNote</div>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="header-actions">
+                <button class="icon-btn" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="icon-btn">
+                    <i class="fas fa-bell"></i>
+                </button>
+            </div>
+            <div class="user-profile">
+                <div class="user-avatar">JD</div>
+                <div class="user-name">John Doe</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Teams Content -->
+    <div class="teams-container">
+        <div class="teams-header">
+            <h1 class="section-title">Your Teams</h1>
+            <button class="btn">
+                <i class="fas fa-plus"></i>
+                Create New Team
+            </button>
+        </div>
+
+        <!-- Teams Grid -->
+        <div class="teams-grid">
+            <!-- Team Card 1 -->
+            <div class="team-card">
+                <div class="team-header">
+                    <div class="team-avatar">DS</div>
+                    <h2 class="team-name">Design Team</h2>
+                    <p class="team-members">8 members • 142 notes</p>
+                    <div class="team-actions">
+                        <button class="team-action-btn">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                        <button class="team-action-btn">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="team-content">
+                    <p class="team-description">Our team of designers working on UI/UX for TeamNote and other products.
+                        Focused on creating beautiful, intuitive interfaces.</p>
+
+                    <div class="section-subtitle">
+                        <i class="fas fa-users"></i>
+                        <span>Members</span>
+                    </div>
+                    <div class="members-list">
+                        <div class="member">
+                            <div class="member-avatar">JD</div>
+                            <span>John Doe</span>
+                        </div>
+                        <div class="member">
+                            <div class="member-avatar">SJ</div>
+                            <span>Sarah Johnson</span>
+                        </div>
+                        <div class="member">
+                            <div class="member-avatar">MP</div>
+                            <span>Mike Peterson</span>
+                        </div>
+                        <div class="member">
+                            <div class="member-avatar">AC</div>
+                            <span>Alex Chen</span>
+                        </div>
+                        <div class="member">
+                            <div class="member-avatar">+4</div>
+                            <span>Others</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="team-footer">
+                    <button class="btn-outline">
+                        <i class="fas fa-user-plus"></i>
+                        Invite
+                    </button>
+                    <div class="team-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-file-alt"></i>
+                            <span>24 active</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-comments"></i>
+                            <span>18 unread</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Card 2 -->
+            <div class="team-card">
+                <div class="team-header"
+                     style="background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));">
+                    <div class="team-avatar">DT</div>
+                    <h2 class="team-name">Development Team</h2>
+                    <p class="team-members">12 members • 267 notes</p>
+                    <div class="team-actions">
+                        <button class="team-action-btn">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                        <button class="team-action-btn">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="team-content">
+                    <p class="team-description">Frontend and backend developers building TeamNote. Focused on
+                        performance, reliability, and creating the best collaboration experience.</p>
+
+                    <div class="section-subtitle">
+                        <i class="fas fa-users"></i>
+                        <span>Members</span>
+                    </div>
+                    <div class="members-list">
+                        <div class="member">
+                            <div class="member-avatar">JD</div>
+                            <span>John Doe</span>
+                        </div>
+                        <div class="member">
+                            <div class="member-avatar">MP</div>
+                            <span>Mike Peterson</span>
+                        </div>
+                        <div class="member">
+                            <div class="member-avatar">AC</div>
+                            <span>Alex Chen</span>
+                        </div>
+                        <div class="member">
+                            <div class="member-avatar">+9</div>
+                            <span>Others</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="team-footer">
+                    <button class="btn-outline">
+                        <i class="fas fa-user-plus"></i>
+                        Invite
+                    </button>
+                    <div class="team-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-file-alt"></i>
+                            <span>32 active</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-comments"></i>
+                            <span>7 unread</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Card 3 -->
+            <div class="team-card">
+                <div class="team-header"
+                     style="background: linear-gradient(135deg, var(--accent-pink), var(--accent-orange));">
+                    <div class="team-avatar">PM</div>
+                    <h2 class="team-name">Product Managers</h2>
+                    <p class="team-members">5 members • 87 notes</p>
+                    <div class="team-actions">
+                        <button class="team-action-btn">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                        <button class="team-action-btn">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="team-content">
+                    <p class="team-description">Product team defining the roadmap and features for TeamNote. Working
+                        closely with design and development teams.</p>
+
+                    <div class="section-subtitle">
+                        <i class="fas fa-users"></i>
+                        <span>Members</span>
+                    </div>
+                    <div class="members-list">
+                        <div class="member">
+                            <div class="member-avatar">SJ</div>
+                            <span>Sarah Johnson</span>
+                        </div>
+                        <div class="member">
+                            <div class="member-avatar">TM</div>
+                            <span>Taylor Morgan</span>
+                        </div>
+                        <div class="member">
+                            <div class="member-avatar">+3</div>
+                            <span>Others</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="team-footer">
+                    <button class="btn-outline">
+                        <i class="fas fa-user-plus"></i>
+                        Invite
+                    </button>
+                    <div class="team-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-file-alt"></i>
+                            <span>14 active</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-comments"></i>
+                            <span>3 unread</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Team Section -->
+        <div class="create-team-section">
+            <div class="create-team-header">
+                <div class="create-team-icon">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <h2 class="section-title">Create New Team</h2>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Team Name</label>
+                    <input type="text" class="form-input" placeholder="Enter team name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Team Avatar</label>
+                    <div style="display: flex; gap: 15px; align-items: center;">
+                        <div style="width: 60px; height: 60px; border-radius: 14px; background: var(--secondary-bg-color); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold;">
+                            TN
+                        </div>
+                        <button class="btn-outline">Upload Image</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea class="form-textarea" placeholder="Describe the purpose of this team"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Invite Members</label>
+                <div class="invite-section">
+                    <div class="invite-input-group">
+                        <input type="email" class="form-input invite-input" placeholder="Enter email addresses">
+                        <button class="btn invite-btn">Send Invite</button>
+                    </div>
+                    <p style="color: #6B7280; font-size: 0.9rem;">Separate multiple emails with commas</p>
+
+                    <div class="invited-list">
+                        <div class="invited-item">
+                            <span>sarah@example.com</span>
+                            <i class="fas fa-times remove-invite"></i>
+                        </div>
+                        <div class="invited-item">
+                            <span>mike@example.com</span>
+                            <i class="fas fa-times remove-invite"></i>
+                        </div>
+                        <div class="invited-item">
+                            <span>alex@example.com</span>
+                            <i class="fas fa-times remove-invite"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 15px; margin-top: 20px;">
+                <button class="btn-outline">Cancel</button>
+                <button class="btn">Create Team</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Theme Toggle Functionality
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+
+    themeToggle.addEventListener('click', () => {
+        const isDarkMode = body.getAttribute('data-theme') === 'dark';
+        if (isDarkMode) {
+            body.removeAttribute('data-theme');
+            localStorage.setItem('theme', 'light');
+            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        } else {
+            body.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+    });
+
+    // Apply saved theme preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        body.setAttribute('data-theme', 'dark');
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+    }
+
+    // Remove invite functionality
+    const removeButtons = document.querySelectorAll('.remove-invite');
+    removeButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            this.parentElement.remove();
+        });
+    });
+
+    // Send invite functionality
+    const inviteBtn = document.querySelector('.invite-btn');
+    const inviteInput = document.querySelector('.invite-input');
+    const invitedList = document.querySelector('.invited-list');
+
+    inviteBtn.addEventListener('click', function () {
+        const emails = inviteInput.value.split(',').map(email => email.trim());
+
+        emails.forEach(email => {
+            if (email && isValidEmail(email)) {
+                const invitedItem = document.createElement('div');
+                invitedItem.className = 'invited-item';
+                invitedItem.innerHTML = `
+                        <span>${email}</span>
+                        <i class="fas fa-times remove-invite"></i>
+                    `;
+                invitedList.appendChild(invitedItem);
+
+                // Add event to remove button
+                invitedItem.querySelector('.remove-invite').addEventListener('click', function () {
+                    invitedItem.remove();
+                });
+            }
+        });
+
+        inviteInput.value = '';
+    });
+
+    function isValidEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
+
+    // Team card animation
+    const teamCards = document.querySelectorAll('.team-card');
+    teamCards.forEach((card, index) => {
+        setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, 150 * index);
+    });
+
+    // Initialize cards with opacity for animation
+    document.querySelectorAll('.team-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    });
+</script>
+</body>
+</html>

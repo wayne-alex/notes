@@ -1,0 +1,246 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamNote Signup</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+
+    <style>
+        /* iOS-specific styles for Signup */
+        .signup-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 2rem;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .signup-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .signup-header h1 {
+            color: var(--text-color);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .signup-header p {
+            color: #666;
+        }
+
+        .signup-form {
+            background-color: var(--card-bg-color);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-group {
+            position: relative;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .form-group:last-child {
+            border-bottom: none;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            background: transparent;
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+        }
+
+        .signup-button {
+            width: 100%;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .signup-button:hover {
+            background-color: var(--button-hover-bg-color);
+        }
+
+        .signup-button:active {
+            transform: scale(0.98);
+        }
+
+        .signup-button:disabled {
+            background-color: var(--primary-light);
+            cursor: not-allowed;
+        }
+
+        /* Spinner */
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin: -10px 0 0 -10px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Button text */
+        .button-text {
+            transition: opacity 0.3s ease;
+        }
+
+        .loading .button-text {
+            opacity: 0;
+        }
+
+        .loading .spinner {
+            display: block;
+        }
+
+        .messages {
+            margin-bottom: 1rem;
+        }
+
+        .alert {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .alert-error {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .alert-success {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+    </style>
+</head>
+<body>
+<div class="messages">
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+    {% endfor %}
+</div>
+<div class="signup-container">
+    <div class="signup-header">
+        <img src="{% static 'Logo.svg' %}" alt="TeamNote Logo" style="width: 100px; margin-bottom: 1rem;">
+
+        <h1>TeamNote</h1>
+        <p>Create a new account</p>
+    </div>
+
+    <form
+            class="signup-form"
+            id="signupForm"
+            method="POST"
+            action="{% url 'register_user' %}"
+    >
+        {% csrf_token %}
+        <div class="form-group">
+            <input type="text" placeholder="Full Name" name="full_name" required>
+        </div>
+        <div class="form-group">
+            <input type="email" placeholder="Email" name="email" required>
+        </div>
+        <div class="form-group">
+            <input type="password" placeholder="Password" name="password" required>
+        </div>
+        <div class="form-group">
+            <input type="password" placeholder="Confirm Password" name="confirm_password" required>
+        </div>
+    </form>
+
+    <button class="signup-button" id="signupButton">
+        <span class="button-text">Sign Up</span>
+        <div class="spinner"></div>
+    </button>
+    <div style="text-align: center; margin-top: 1.5rem;">
+        <p style="color: var(--text-color); font-size: 0.9rem;">
+            Already have an account?
+            <a href="{% url 'login_user' %}"
+               style="color: var(--primary-color); text-decoration: none; font-weight: bold;">
+                Log In
+            </a>
+        </p>
+    </div>
+</div>
+
+<script>
+    document.getElementById('signupButton').addEventListener('click', async function (e) {
+        e.preventDefault();
+
+        const button = this;
+        const form = document.getElementById('signupForm');
+
+        // Basic form validation
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        // Add loading state
+        button.classList.add('loading');
+        button.disabled = true;
+
+        try {
+            const response = await fetch('{% url "register_user" %}', {
+                method: 'POST',
+                body: new FormData(form),
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                window.location.href = "{% url 'login_user' %}";
+            } else {
+                alert(data.error || 'Registering New User failed. Please try again.');
+            }
+
+        } catch (error) {
+            // Error handling would go here
+            console.error('Signup failed');
+
+        } finally {
+            // Remove loading state
+            button.classList.remove('loading');
+            button.disabled = false;
+        }
+    });
+</script>
+</body>
+</html>

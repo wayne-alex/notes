@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamNote - Elegant Editor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        :root {
+            --primary-color: #6366F1;
+            --primary-light: #818CF8;
+            --primary-dark: #4F46E5;
+            --accent-green: #10B981;
+            --accent-orange: #F59E0B;
+            --accent-pink: #EC4899;
+            --accent-purple: #8B5CF6;
+            --accent-blue: #3B82F6;
+
+            --primary-bg-color: #ffffff;
+            --secondary-bg-color: #F9FAFB;
+            --text-color: #1F2937;
+            --header-bg-color: var(--primary-color);
+            --button-bg-color: var(--primary-color);
+            --button-hover-bg-color: var(--primary-dark);
+            --link-color: var(--primary-color);
+            --border-color: #E5E7EB;
+            --input-bg-color: #ffffff;
+            --input-border-color: #E5E7EB;
+            --input-focus-border-color: var(--primary-light);
+            --modal-bg-color: rgba(99, 102, 241, 0.1);
+            --card-bg-color: #FAFAFA;
+            --ribbon-bg: #F8FAFC;
+        }
+
+        [data-theme='dark'] {
+            --primary-bg-color: #1F2937;
+            --secondary-bg-color: #111827;
+            --text-color: #F9FAFB;
+            --header-bg-color: var(--primary-dark);
+            --button-bg-color: var(--primary-color);
+            --button-hover-bg-color: var(--primary-light);
+            --link-color: var(--primary-light);
+            --border-color: #4B5563;
+            --input-bg-color: #374151;
+            --input-border-color: #4B5563;
+            --input-focus-border-color: var(--primary-light);
+            --modal-bg-color: rgba(99, 102, 241, 0.2);
+            --card-bg-color: #374151;
+            --ribbon-bg: #1F2937;
+        }
+
+        body {
+            background-color: var(--primary-bg-color);
+            color: var(--text-color);
+            height: 100vh;
+            overflow: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* App Container */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Header Styles */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            background-color: var(--primary-bg-color);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo {
+            width: 36px;
+            height: 36px;
+            background: var(--primary-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .app-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-color);
+            white-space: nowrap;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--card-bg-color);
+            color: var(--text-color);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: var(--border-color);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: var(--card-bg-color);
+            transition: all 0.2s;
+        }
+
+        .user-profile:hover {
+            background: var(--border-color);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .user-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        /* Ribbon Toolbar */
+        .editor-ribbon {
+            background-color: var(--ribbon-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            z-index: 90;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+        }
+
+        .ribbon-group {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            padding: 5px 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .ribbon-group-title {
+            font-size: 0.85rem;
+            color: #6B7280;
+            margin-right: 5px;
+            font-weight: 500;
+        }
+
+        .ribbon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            color: var(--text-color);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .ribbon-btn:hover {
+            background: var(--border-color);
+        }
+
+        .ribbon-btn.active {
+            background: var(--primary-light);
+            color: white;
+        }
+
+        .ribbon-select {
+            height: 36px;
+            border-radius: 6px;
+            background: var(--input-bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 0 10px;
+        }
+
+        /* Editor Container */
+        .editor-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background-color: var(--primary-bg-color);
+        }
+
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .back-button:hover {
+            background: var(--card-bg-color);
+        }
+
+        .note-title-input {
+            flex: 1;
+            font-size: 1.8rem;
+            font-weight: 700;
+            border: none;
+            background: transparent;
+            color: var(--text-color);
+            padding: 10px 15px;
+            margin: 0 15px;
+            border-radius: 8px;
+        }
+
+        .note-title-input:focus {
+            outline: none;
+            background: var(--card-bg-color);
+            box-shadow: 0 0 0 2px var(--primary-light);
+        }
+
+        .editor-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .editor-btn {
+            padding: 10px 16px;
+            border-radius: 8px;
+            background: var(--button-bg-color);
+            color: white;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .editor-btn.outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        .editor-btn.outline:hover {
+            background: var(--card-bg-color);
+        }
+
+        .editor-btn:hover {
+            background: var(--button-hover-bg-color);
+        }
+
+        /* Editor Content */
+        .editor-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--secondary-bg-color);
+            position: relative;
+        }
+
+        .editor-body {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            font-size: 1.1rem;
+            line-height: 1.7;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .editor-body:focus {
+            outline: none;
+        }
+
+        /* Formatting styles */
+        .editor-body h1 {
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+        }
+
+        .editor-body h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.3rem;
+            font-weight: 700;
+        }
+
+        .editor-body h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.1rem;
+            font-weight: 600;
+        }
+
+        .editor-body p {
+            margin-bottom: 1.5rem;
+        }
+
+        .editor-body ul, .editor-body ol {
+            margin-left: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .editor-body blockquote {
+            border-left: 4px solid var(--primary-color);
+            padding-left: 1.5rem;
+            margin-left: 0;
+            margin-bottom: 1.5rem;
+            color: #6B7280;
+            font-style: italic;
+        }
+
+        .editor-body pre {
+            background: var(--card-bg-color);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            border: 1px solid var(--border-color);
+        }
+
+        .editor-body code {
+            font-family: 'Courier New', monospace;
+            background: var(--card-bg-color);
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Editor Footer */
+        .editor-footer {
+            padding: 15px 25px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--primary-bg-color);
+        }
+
+        .collaborators {
+            display: flex;
+            align-items: center;
+        }
+
+        .collaborator {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+            margin-left: -8px;
+            border: 2px solid var(--primary-bg-color);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .collaborator:first-child {
+            margin-left: 0;
+        }
+
+        .collaborator.active::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            border: 2px solid var(--primary-bg-color);
+            bottom: -2px;
+            right: -2px;
+        }
+
+        .collaborator-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--text-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            z-index: 100;
+        }
+
+        .collaborator:hover .collaborator-tooltip {
+            opacity: 1;
+        }
+
+        .add-collaborator {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-color);
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: all 0.2s;
+        }
+
+        .add-collaborator:hover {
+            background: var(--primary-light);
+            color: white;
+        }
+
+        .note-meta {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            color: #6B7280;
+            font-size: 0.9rem;
+        }
+
+        /* Collaboration Highlights */
+        .user-highlight {
+            background-color: rgba(59, 130, 246, 0.15);
+            border-bottom: 2px solid var(--accent-blue);
+            position: relative;
+        }
+
+        .user-highlight::after {
+            content: 'You';
+            position: absolute;
+            top: -20px;
+            right: 0;
+            background: var(--accent-blue);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .collab-highlight {
+            position: relative;
+        }
+
+        .collab-highlight::after {
+            content: attr(data-user);
+            position: absolute;
+            top: -20px;
+            right: 0;
+            background: var(--accent-green);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .highlight-john {
+            background-color: rgba(99, 102, 241, 0.15);
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .highlight-sarah {
+            background-color: rgba(16, 185, 129, 0.15);
+            border-bottom: 2px solid var(--accent-green);
+        }
+
+        .highlight-mike {
+            background-color: rgba(245, 158, 11, 0.15);
+            border-bottom: 2px solid var(--accent-orange);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .editor-ribbon {
+                gap: 10px;
+                padding: 10px;
+            }
+
+            .ribbon-group {
+                padding: 5px;
+            }
+
+            .ribbon-group-title {
+                display: none;
+            }
+
+            .editor-body {
+                padding: 25px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .editor-header {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+
+            .note-title-input {
+                margin: 0;
+                order: 3;
+                width: 100%;
+                font-size: 1.5rem;
+            }
+
+            .editor-actions {
+                margin-left: auto;
+            }
+
+            .editor-body {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .editor-actions {
+                gap: 5px;
+            }
+
+            .editor-btn span {
+                display: none;
+            }
+
+            .editor-btn {
+                padding: 8px;
+            }
+
+            .user-name {
+                display: none;
+            }
+
+            .user-profile {
+                padding: 5px;
+            }
+
+            .app-name {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--card-bg-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-light);
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .theme-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .theme-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .theme-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .theme-slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .theme-slider:before {
+            transform: translateX(26px);
+        }
+    </style>
+</head>
+<body>
+<!-- App Container -->
+<div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-left">
+            <div class="logo-container">
+                <div class="logo">TN</div>
+                <div class="app-name">TeamNote</div>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="header-actions">
+                <button class="icon-btn" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="icon-btn">
+                    <i class="fas fa-bell"></i>
+                </button>
+            </div>
+            <div class="user-profile">
+                <div class="user-avatar">JD</div>
+                <div class="user-name">John Doe</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Ribbon Toolbar -->
+    <div class="editor-ribbon">
+        <div class="ribbon-group">
+            <span class="ribbon-group-title">File</span>
+            <button class="ribbon-btn">
+                <i class="fas fa-save"></i>
+            </button>
+            <button class="ribbon-btn">
+                <i class="fas fa-print"></i>
+            </button>
+            <button class="ribbon-btn">
+                <i class="fas fa-share-alt"></i>
+            </button>
+        </div>
+
+        <div class="ribbon-group">
+            <span class="ribbon-group-title">Edit</span>
+            <button class="ribbon-btn">
+                <i class="fas fa-undo"></i>
+            </button>
+            <button class="ribbon-btn">
+                <i class="fas fa-redo"></i>
+            </button>
+        </div>
+
+        <div class="ribbon-group">
+            <span class="ribbon-group-title">Format</span>
+            <button class="ribbon-btn" data-command="bold">
+                <i class="fas fa-bold"></i>
+            </button>
+            <button class="ribbon-btn" data-command="italic">
+                <i class="fas fa-italic"></i>
+            </button>
+            <button class="ribbon-btn" data-command="underline">
+                <i class="fas fa-underline"></i>
+            </button>
+            <select class="ribbon-select">
+                <option>Paragraph</option>
+                <option>Heading 1</option>
+                <option>Heading 2</option>
+                <option>Heading 3</option>
+            </select>
+            <button class="ribbon-btn">
+                <i class="fas fa-list-ul"></i>
+            </button>
+            <button class="ribbon-btn">
+                <i class="fas fa-list-ol"></i>
+            </button>
+        </div>
+
+        <div class="ribbon-group">
+            <span class="ribbon-group-title">Insert</span>
+            <button class="ribbon-btn">
+                <i class="fas fa-image"></i>
+            </button>
+            <button class="ribbon-btn">
+                <i class="fas fa-link"></i>
+            </button>
+            <button class="ribbon-btn">
+                <i class="fas fa-table"></i>
+            </button>
+            <button class="ribbon-btn">
+                <i class="fas fa-code"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Editor Container -->
+    <div class="editor-container">
+        <div class="editor-header">
+            <button class="back-button" id="backButton">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back to Notes</span>
+            </button>
+
+            <input type="text" class="note-title-input" value="Product Design Brief" placeholder="Note title">
+
+            <div class="editor-actions">
+                <button class="editor-btn outline">
+                    <i class="fas fa-share-alt"></i>
+                    <span>Share</span>
+                </button>
+                <button class="editor-btn">
+                    <i class="fas fa-save"></i>
+                    <span>Save</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="editor-content">
+            <div class="editor-body" id="editor" contenteditable="true">
+                <h1>Product Design Brief</h1>
+                <p>This document outlines the requirements and specifications for the new dashboard interface redesign.
+                    The goal is to create a more intuitive and visually appealing experience for our users.</p>
+
+                <h2>Project Overview</h2>
+                <p>The redesign should focus on improving usability while maintaining the core functionality that our
+                    users love. Key areas for improvement include navigation, information hierarchy, and visual
+                    design.</p>
+
+                <h2>User Personas</h2>
+                <p class="user-highlight">Our primary users are team leaders and project managers who need to coordinate
+                    multiple projects simultaneously. Secondary users include individual contributors who need to access
+                    and update project details.</p>
+
+                <h2>Design Goals</h2>
+                <ul>
+                    <li><span class="highlight-john collab-highlight" data-user="John">Simplify navigation between projects and teams</span>
+                    </li>
+                    <li><span class="user-highlight">Improve visual hierarchy of information</span></li>
+                    <li>Enhance collaboration features</li>
+                    <li><span class="highlight-sarah collab-highlight" data-user="Sarah">Create a consistent design system</span>
+                    </li>
+                </ul>
+
+                <h2>Key Features</h2>
+                <blockquote>
+                    "The design should balance functionality with aesthetics, providing a delightful experience without
+                    sacrificing productivity."
+                </blockquote>
+
+                <h3>Core Requirements</h3>
+                <ol>
+                    <li>Project overview dashboard</li>
+                    <li class="highlight-mike collab-highlight" data-user="Mike">Team collaboration space</li>
+                    <li>Task management system</li>
+                    <li class="user-highlight">Advanced search functionality</li>
+                </ol>
+
+                <h2>Visual Design</h2>
+                <p>We'll be using a clean, modern aesthetic with our signature color palette:</p>
+                <pre>primary-color: #6366F1;
+accent-green: #10B981;
+accent-orange: #F59E0B;
+text-color: #1F2937;</pre>
+
+                <p>Typography will use the system font stack for optimal performance and readability.</p>
+            </div>
+        </div>
+
+        <div class="editor-footer">
+            <div class="collaborators">
+                <div class="collaborator" style="background: #6366F1;" title="John Doe">
+                    JD
+                    <div class="collaborator-tooltip">John Doe</div>
+                </div>
+                <div class="collaborator" style="background: #10B981;" title="Sarah Johnson">
+                    SJ
+                    <div class="collaborator-tooltip">Sarah Johnson</div>
+                </div>
+                <div class="collaborator" style="background: #F59E0B;" title="Mike Peterson">
+                    MP
+                    <div class="collaborator-tooltip">Mike Peterson</div>
+                </div>
+                <div class="collaborator" style="background: #EC4899;" title="Alex Chen">
+                    AC
+                    <div class="collaborator-tooltip">Alex Chen</div>
+                </div>
+                <button class="add-collaborator">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+
+            <div class="note-meta">
+                <span><i class="fas fa-history"></i> Last saved: 2 minutes ago</span>
+                <span><i class="fas fa-user"></i> 4 collaborators</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Theme Toggle Functionality
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+
+    themeToggle.addEventListener('click', () => {
+        const isDarkMode = body.getAttribute('data-theme') === 'dark';
+        if (isDarkMode) {
+            body.removeAttribute('data-theme');
+            localStorage.setItem('theme', 'light');
+            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        } else {
+            body.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+    });
+
+    // Apply saved theme preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        body.setAttribute('data-theme', 'dark');
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+    }
+
+    // Back button functionality
+    document.getElementById('backButton').addEventListener('click', function () {
+        alert('Returning to dashboard...');
+    });
+
+    // Ribbon button functionality
+    const ribbonBtns = document.querySelectorAll('.ribbon-btn[data-command]');
+    const editor = document.getElementById('editor');
+
+    ribbonBtns.forEach(btn => {
+        btn.addEventListener('click', function () {
+            const command = this.dataset.command;
+            document.execCommand(command, false, null);
+
+            // Toggle active state
+            this.classList.toggle('active');
+        });
+    });
+
+    // Auto-save simulation
+    setInterval(() => {
+        const saveBtn = document.querySelector('.editor-btn');
+        saveBtn.innerHTML = '<i class="fas fa-save"></i> Saved';
+        saveBtn.style.background = 'var(--accent-green)';
+
+        setTimeout(() => {
+            saveBtn.innerHTML = '<i class="fas fa-save"></i> Save';
+            saveBtn.style.background = '';
+        }, 2000);
+    }, 30000);
+
+    // Add placeholder when editor is empty
+    editor.addEventListener('focus', function () {
+        if (this.innerHTML === '') {
+            this.innerHTML = '<p><br></p>';
+        }
+    });
+
+    editor.addEventListener('blur', function () {
+        if (this.innerHTML === '<p><br></p>') {
+            this.innerHTML = '';
+        }
+    });
+
+    // Highlight current user's text when selected
+    editor.addEventListener('mouseup', function () {
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return;
+
+        const range = selection.getRangeAt(0);
+        const selectedText = range.toString();
+
+        if (selectedText.length > 0) {
+            const span = document.createElement('span');
+            span.className = 'user-highlight';
+            span.textContent = selectedText;
+
+            range.deleteContents();
+            range.insertNode(span);
+
+            // Clear selection
+            selection.removeAllRanges();
+        }
+    });
+
+    // Simulate collaborative editing
+    function simulateCollaboration() {
+        setTimeout(() => {
+            const paragraphs = document.querySelectorAll('p, li');
+            if (paragraphs.length > 2) {
+                paragraphs[1].classList.add('highlight-sarah', 'collab-highlight');
+                paragraphs[1].setAttribute('data-user', 'Sarah');
+
+                setTimeout(() => {
+                    const listItems = document.querySelectorAll('li');
+                    if (listItems.length > 1) {
+                        listItems[1].classList.add('highlight-mike', 'collab-highlight');
+                        listItems[1].setAttribute('data-user', 'Mike');
+                    }
+                }, 4000);
+            }
+        }, 3000);
+    }
+
+    simulateCollaboration();
+</script>
+</body>
+</html>
